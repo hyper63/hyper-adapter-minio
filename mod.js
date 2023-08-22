@@ -13,21 +13,32 @@ export default ({ url, bucketPrefix, useNamespacedBucket }) => {
       message: 'Prefix name: must be a string 1-32 alphanumeric characters',
     })
 
-  const setFromEnv = (config) => mergeRight({ url: Deno.env.get('MINIO_URL') }, config)
+  const setFromEnv = (config) =>
+    mergeRight({
+      url: Deno.env.get('MINIO_URL'),
+      // optional. Credentials in MINIO_URL take precedent
+      accessKey: Deno.env.get('MINIO_ROOT_USER'),
+      secretKey: Deno.env.get('MINIO_ROOT_PASSWORD'),
+    }, config)
 
   const setUseNamespacedBucket = (config) => mergeRight({ useNamespacedBucket: false }, config)
 
-  const setClient = ({ url }) =>
-    over(lensProp('minio'), () => {
-      const config = new URL(url)
-      return new Minio.Client({
-        endPoint: config.hostname,
-        accessKey: config.username,
-        secretKey: config.password,
-        useSSL: config.protocol === 'https:',
-        port: Number(config.port),
-      })
-    })
+  const setClient = (config) =>
+    over(
+      lensProp('minio'),
+      () => {
+        const minioConfig = new URL(config.url)
+        return new Minio.Client({
+          endPoint: minioConfig.hostname,
+          // Fallback to credentials pulled from env, if none in MINIO_URL
+          accessKey: minioConfig.username || config.accessKey,
+          secretKey: minioConfig.password || config.secretKey,
+          useSSL: minioConfig.protocol === 'https:',
+          port: Number(minioConfig.port),
+        })
+      },
+      config,
+    )
 
   return Object.freeze({
     id: 'minio',
@@ -44,11 +55,12 @@ export default ({ url, bucketPrefix, useNamespacedBucket }) => {
           (e) => console.log('Error: In Load Method', e.message),
           identity,
         ),
-    link: (config) => (_) =>
-      createAdapter({
+    link: (config) => (_) => {
+      return createAdapter({
         minio: config.minio,
         bucketPrefix: config.bucketPrefix,
         useNamespacedBucket: config.useNamespacedBucket,
-      }),
+      })
+    },
   })
 }
