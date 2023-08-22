@@ -97,7 +97,6 @@ export default function (config) {
     return checkBucket(name)
       .chain(() => client.listObjects({ bucket: name, prefix: '' }))
       .chain((objects) => {
-        console.log(objects)
         if (!objects.length) return Async.Resolved()
         return client.removeObjects({ bucket: name, keys: objects.map((o) => o.name) })
       })
