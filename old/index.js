@@ -1,5 +1,5 @@
-const createAdapter = require("./adapter");
-const Minio = require("minio");
+const createAdapter = require('./adapter')
+const Minio = require('minio')
 
 /**
  * @param {object} config
@@ -10,7 +10,7 @@ module.exports = function MinioStorageAdapter(config) {
    * @param {object} env
    */
   function load() {
-    return config;
+    return config
   }
 
   /**
@@ -24,22 +24,22 @@ module.exports = function MinioStorageAdapter(config) {
      */
     return function () {
       // parse url
-      const config = new URL(env.url);
+      const config = new URL(env.url)
       const client = new Minio.Client({
         endPoint: config.hostname,
         accessKey: config.username,
         secretKey: config.password,
-        useSSL: config.protocol === "https:",
+        useSSL: config.protocol === 'https:',
         port: Number(config.port),
-      });
-      return createAdapter(client);
-    };
+      })
+      return createAdapter(client)
+    }
   }
 
   return Object.freeze({
-    id: "minio-storage-adapter",
-    port: "storage",
+    id: 'minio-storage-adapter',
+    port: 'storage',
     load,
     link,
-  });
-};
+  })
+}

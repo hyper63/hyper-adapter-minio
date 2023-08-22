@@ -1,0 +1,14 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - name: Start MinIO
+    init: docker build -t hyper-minio .minio
+    command: |
+      mkdir -p /workspace/data
+      docker run -it -p 9000:9000 -p 9001:9001 -v /workspace/data:/data hyper-minio
+  
+  - name: Test Harness Environment
+    command: |
+      export MINIO_URL=http://minioadmin:minioadmin@127.0.0.1:9000
+      echo "MINIO_URL set: $MINIO_URL"
