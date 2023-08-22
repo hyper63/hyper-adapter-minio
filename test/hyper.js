@@ -10,7 +10,10 @@ import PORT_NAME from '../port_name.js'
 const hyperConfig = {
   app,
   adapters: [
-    { port: PORT_NAME, plugins: [myAdapter({ url: Deno.env.get('MINIO_URL'), bucketPrefix: 'harness' })] },
+    {
+      port: PORT_NAME,
+      plugins: [myAdapter({ url: Deno.env.get('MINIO_URL'), bucketPrefix: 'harness' })],
+    },
   ],
 }
 

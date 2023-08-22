@@ -5,10 +5,28 @@ tasks:
   - name: Start MinIO
     init: docker build -t hyper-minio .minio
     command: |
-      mkdir -p /workspace/data
-      docker run -it -p 9000:9000 -p 9001:9001 -v /workspace/data:/data hyper-minio
+      mkdir -p /workspace/minio/data
+      docker run \
+        -it \
+        -p 9000:9000 \
+        -p 9001:9001 \
+        -v /workspace/minio/data:/data \
+        hyper-minio
+
   
   - name: Test Harness Environment
     command: |
-      export MINIO_URL=http://minioadmin:minioadmin@127.0.0.1:9000
-      echo "MINIO_URL set: $MINIO_URL"
+      export MINIO_URL=`gp url 9000`
+      export MINIO_ROOT_USER=minioadmin
+      export MINIO_ROOT_PASSWORD=minioadmin
+
+ports:
+  # MinIO S3 API
+  - port: 9000
+    visibility: public
+  # MinIO Console
+  - port: 9001
+    visibility: public
+  # hyper
+  - port: 6363
+    visibility: public

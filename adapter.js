@@ -1,11 +1,11 @@
-import { crocks, R } from './deps.js'
+import { crocks, HyperErr, R } from './deps.js'
 
 import { Multi } from './lib/multi.js'
 import { Namespaced } from './lib/namespaced.js'
 import { checkName, handleHyperErr } from './lib/utils.js'
 
 const { Async } = crocks
-const { prop, map } = R
+const { prop, map, always } = R
 
 export const HYPER_BUCKET_PREFIX = 'hyper-storage-namespaced'
 
@@ -47,7 +47,7 @@ export const HYPER_BUCKET_PREFIX = 'hyper-storage-namespaced'
 export default function (config) {
   const { bucketPrefix, useNamespacedBucket, minio } = config
 
-  const lib = useNamespacedBucket ? Namespaced() : Multi(bucketPrefix)
+  const lib = useNamespacedBucket ? Namespaced(bucketPrefix) : Multi(bucketPrefix)
 
   const client = {
     makeBucket: lib.makeBucket(minio),
@@ -61,6 +61,20 @@ export default function (config) {
     getSignedUrl: lib.getSignedUrl(minio),
     listObjects: lib.listObjects(minio),
   }
+
+  /**
+   * Check the name of the bucket is valid and whether it exists or not
+   */
+  const checkBucket = (name) =>
+    checkName(name)
+      .chain(() =>
+        client.bucketExists(name)
+          .chain((exists) =>
+            exists ? Async.Resolved(name) : Async.Rejected(
+              HyperErr({ status: 404, msg: 'bucket does not exist' }),
+            )
+          )
+      )
 
   /**
    * @param {string} name
@@ -80,8 +94,13 @@ export default function (config) {
    * @returns {Promise<ResponseMsg>}
    */
   function removeBucket(name) {
-    return checkName(name)
-      .chain(() => client.removeObjects({ bucket: name, prefix: '' }))
+    return checkBucket(name)
+      .chain(() => client.listObjects({ bucket: name, prefix: '' }))
+      .chain((objects) => {
+        console.log(objects)
+        if (!objects.length) return Async.Resolved()
+        return client.removeObjects({ bucket: name, keys: objects.map((o) => o.name) })
+      })
       .chain(() => client.removeBucket(name))
       .bichain(
         handleHyperErr,
@@ -105,7 +124,7 @@ export default function (config) {
    * @returns {Promise<ResponseOk>}
    */
   function putObject({ bucket, object, stream, useSignedUrl }) {
-    return Async.all([checkName(bucket), checkName(object)])
+    return Async.all([checkBucket(bucket), checkName(object)])
       .chain(() => Async.of({ bucket, object, stream, useSignedUrl }))
       .chain(({ bucket, object, stream, useSignedUrl }) => {
         if (!useSignedUrl) {
@@ -129,8 +148,8 @@ export default function (config) {
    * @returns {Promise<ResponseOk>}
    */
   function removeObject({ bucket, object }) {
-    return checkName(bucket)
-      .chain(() => client.removeObject({ bucket, object }))
+    return checkBucket(bucket)
+      .chain(() => client.removeObject({ bucket, key: object }))
       .bichain(
         handleHyperErr,
         always(Async.Resolved({ ok: true })),
@@ -142,7 +161,7 @@ export default function (config) {
    * @returns {Promise<{ ok: false, msg?: string, status?: number } | ReadableStream>}
    */
   function getObject({ bucket, object, useSignedUrl }) {
-    return Async.all([checkName(bucket), checkName(object)])
+    return Async.all([checkBucket(bucket), checkName(object)])
       .chain(() => Async.of({ bucket, object, useSignedUrl }))
       .chain(({ bucket, object, useSignedUrl }) => {
         if (!useSignedUrl) {
@@ -172,7 +191,7 @@ export default function (config) {
    * @returns {Promise<ResponseObjects>}
    */
   function listObjects({ bucket, prefix }) {
-    return Async.all([checkName(bucket), checkName(object)])
+    return Async.all([checkBucket(bucket), checkName(object)])
       .chain(() => client.listObjects({ bucket, prefix }))
       .bimap(
         identity,
