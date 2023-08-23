@@ -1,0 +1,17 @@
+{
+  "$schema": "https://x.nest.land/eggs@0.3.8/src/schema.json",
+  "name": "hyper-adapter-minio",
+  "entry": "./mod.ts",
+  "description": "Hyper Storage port adapter for minio and s3",
+  "homepage": "https://github.com/hyper63/hyper-adapter-minio",
+  "repo": "https://github.com/hyper63/hyper-adapter-minio",
+  "version": "0.0.1",
+  "unstable": false,
+  "unlisted": false,
+  "files": ["./*"],
+  "ignore": ["./package.json", "./.git*"],
+  "checkFormat": false,
+  "checkTests": false,
+  "checkInstallation": false,
+  "check": false
+}
