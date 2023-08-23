@@ -14,6 +14,7 @@
   - [Credentials](#credentials)
     - [From the URL](#from-the-url)
   - [from ENV VARS](#from-env-vars)
+- [Usage with AWS S3](#usage-with-aws-s3)
 - [Multiple Buckets or Namespaced Single Bucket](#multiple-buckets-or-namespaced-single-bucket)
 - [Features](#features)
 - [Methods](#methods)
@@ -71,6 +72,15 @@ You can also set the environment variables `MINIO_ROOT_USER` to your `accessKey`
 > Credentials provided in the `url` will supercede any credentials pulled from environment
 > variables. In other words, if credentials are provided in both ways, the credentials derived from
 > the url will be used.
+
+## Usage with AWS S3
+
+This adapter can also be used on top on AWS' popular S3 service. To do so, simply adjust the `host`
+in the `url` provided to the adapter to point to `s3`:
+
+```js
+minio({ url: 'https://accessKey:secretKey@s3.amazonaws.com', bucketPrefix: 'uniquePrefix' })
+```
 
 ## Multiple Buckets or Namespaced Single Bucket
 
