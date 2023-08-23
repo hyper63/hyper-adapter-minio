@@ -5,7 +5,7 @@ import { Namespaced } from './lib/namespaced.js'
 import { checkName, handleHyperErr, minioClientSchema } from './lib/utils.js'
 
 const { Async } = crocks
-const { prop, map, always } = R
+const { prop, map, always, identity } = R
 
 export const HYPER_BUCKET_PREFIX = 'hyper-storage-namespaced'
 
@@ -190,7 +190,7 @@ export default function (config) {
    * @returns {Promise<ResponseObjects>}
    */
   function listObjects({ bucket, prefix }) {
-    return Async.all([checkBucket(bucket), checkName(object)])
+    return Async.all([checkBucket(bucket), checkName(prefix)])
       .chain(() => client.listObjects({ bucket, prefix }))
       .bimap(
         identity,
