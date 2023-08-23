@@ -2,7 +2,7 @@ import { crocks, HyperErr, R } from './deps.js'
 
 import { Multi } from './lib/multi.js'
 import { Namespaced } from './lib/namespaced.js'
-import { checkName, handleHyperErr } from './lib/utils.js'
+import { checkName, handleHyperErr, minioClientSchema } from './lib/utils.js'
 
 const { Async } = crocks
 const { prop, map, always } = R
@@ -49,7 +49,7 @@ export default function (config) {
 
   const lib = useNamespacedBucket ? Namespaced(bucketPrefix) : Multi(bucketPrefix)
 
-  const client = {
+  const client = minioClientSchema.parse({
     makeBucket: lib.makeBucket(minio),
     removeBucket: lib.removeBucket(minio),
     bucketExists: lib.bucketExists(minio),
@@ -60,7 +60,7 @@ export default function (config) {
     getObject: lib.getObject(minio),
     getSignedUrl: lib.getSignedUrl(minio),
     listObjects: lib.listObjects(minio),
-  }
+  })
 
   /**
    * Check the name of the bucket is valid and whether it exists or not
