@@ -34,7 +34,7 @@ export default ({ url, bucketPrefix, useNamespacedBucket }) => {
           accessKey: minioConfig.username || config.accessKey,
           secretKey: minioConfig.password || config.secretKey,
           useSSL: minioConfig.protocol === 'https:',
-          port: Number(minioConfig.port),
+          port: Number(minioConfig.port) || minioConfig.protocol === 'https:' ? 443 : 80,
         })
       },
       config,
