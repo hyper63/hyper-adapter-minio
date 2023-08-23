@@ -8,4 +8,4 @@ export {
   assertEquals,
   assertObjectMatch,
   assertThrows,
-} from 'https://deno.land/std@0.198.0/testing/asserts.ts'
+} from 'https://deno.land/std@0.199.0/assert/mod.ts'
