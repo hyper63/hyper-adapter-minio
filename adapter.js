@@ -7,8 +7,6 @@ import { checkName, handleHyperErr, minioClientSchema } from './lib/utils.js'
 const { Async } = crocks
 const { prop, map, always, identity } = R
 
-export const HYPER_BUCKET_PREFIX = 'hyper-storage-namespaced'
-
 /**
  * @typedef {Object} PutObjectArgs
  * @property {string} bucket
