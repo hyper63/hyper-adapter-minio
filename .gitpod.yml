@@ -2,6 +2,9 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
+  - name: Set Git Hooks
+    init: deno task prepare
+
   - name: Start MinIO
     init: docker build -t hyper-minio .minio
     command: |
