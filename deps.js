@@ -1,7 +1,7 @@
 export * as R from 'npm:ramda@0.29.1'
 export { default as crocks } from 'npm:crocks@0.12.4'
 
-export * as Minio from 'npm:minio@7.1.3'
+export * as Minio from 'npm:minio@7.1.4'
 /**
  * readable-stream https://www.npmjs.com/package/readable-stream
  * which is a mirror of Node's streams impls, which now has conversion apis ie. "fromWeb"
