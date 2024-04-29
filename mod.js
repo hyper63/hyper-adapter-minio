@@ -7,7 +7,7 @@ const { Either } = crocks
 const { Left, Right, of } = Either
 const { identity, defaultTo, over, lensProp, mergeRight } = R
 
-export default ({ url, bucketPrefix, useNamespacedBucket }) => {
+export default ({ url, region, bucketPrefix, useNamespacedBucket }) => {
   const checkBucketPrefix = (config) =>
     config.bucketPrefix && config.bucketPrefix.length <= 32 ? Right(config) : Left({
       message: 'Prefix name: must be a string 1-32 alphanumeric characters',
@@ -16,6 +16,7 @@ export default ({ url, bucketPrefix, useNamespacedBucket }) => {
   const setFromEnv = (config) =>
     mergeRight({
       url: Deno.env.get('MINIO_URL'),
+      region: Deno.env.get('MINIO_REGION'),
       // optional. Credentials in MINIO_URL take precedent
       accessKey: Deno.env.get('MINIO_ROOT_USER'),
       secretKey: Deno.env.get('MINIO_ROOT_PASSWORD'),
@@ -30,6 +31,7 @@ export default ({ url, bucketPrefix, useNamespacedBucket }) => {
         const minioConfig = new URL(config.url)
         return new Minio.Client({
           endPoint: minioConfig.hostname,
+          region: config.region,
           // Fallback to credentials pulled from env, if none in MINIO_URL
           accessKey: minioConfig.username || config.accessKey,
           secretKey: minioConfig.password || config.secretKey,
@@ -46,7 +48,7 @@ export default ({ url, bucketPrefix, useNamespacedBucket }) => {
     load: (prevLoad) =>
       of(prevLoad) // credentials can be received from a composed plugin
         .map(defaultTo({}))
-        .map((prevLoad) => mergeRight(prevLoad, { url, bucketPrefix, useNamespacedBucket }))
+        .map((prevLoad) => mergeRight(prevLoad, { url, region, bucketPrefix, useNamespacedBucket }))
         .chain(checkBucketPrefix)
         .map(setFromEnv)
         .map(setUseNamespacedBucket)
