@@ -18,7 +18,6 @@
 - [Multiple Buckets or Namespaced Single Bucket](#multiple-buckets-or-namespaced-single-bucket)
 - [Features](#features)
 - [Methods](#methods)
-- [Contributing](#contributing)
 - [Testing](#testing)
 - [License](#license)
 
@@ -79,8 +78,14 @@ This adapter can also be used on top on AWS' popular S3 service. To do so, simpl
 in the `url` provided to the adapter to point to `s3`:
 
 ```js
-minio({ url: 'https://accessKey:secretKey@s3.amazonaws.com', bucketPrefix: 'uniquePrefix' })
+minio({
+  url: 'https://accessKey:secretKey@s3.amazonaws.com',
+  region: 'us-east-2',
+  bucketPrefix: 'uniquePrefix',
+})
 ```
+
+> `region` defaults to `us-east-1`
 
 ## Multiple Buckets or Namespaced Single Bucket
 
@@ -120,25 +125,20 @@ hyper Storage services `foo` and `bar`, the structure of the bucket would look l
 
 ## Features
 
-- Create an `s3` bucket
-- Remove an `s3` bucket
-- List `s3` buckets
-- Put an object into an `s3` bucket
-- Remove an object from an `s3` bucket
-- Get an object from an `s3` bucket
-- List objects in an `s3` bucket
+- Create an `s3` compatible bucket
+- Remove an `s3` compatible bucket
+- List `s3` compatible buckets
+- Put an object into an `s3` compatible bucket
+- Remove an object from an `s3` compatible bucket
+- Get an object from an `s3` compatible bucket
+- List objects in an `s3` compatible bucket
 
 ## Methods
 
 This adapter fully implements the Storage port and can be used as the
-[hyper Storage service](https://docs.hyper.io/storage-api) adapter
+[hyper Storage service](https://docs.hyper.io/docs/api-reference/rest/storage.html) adapter
 
 See the full port [here](https://github.com/hyper63/hyper/tree/main/packages/port-storage)
-
-## Contributing
-
-Contributions are welcome! See the hyper
-[contribution guide](https://docs.hyper.io/oss/contributing-to-hyper)
 
 ## Testing
 
