@@ -5,7 +5,7 @@
   "description": "Hyper Storage port adapter for minio and s3",
   "homepage": "https://github.com/hyper63/hyper-adapter-minio",
   "repo": "https://github.com/hyper63/hyper-adapter-minio",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "unstable": false,
   "unlisted": false,
   "files": [
