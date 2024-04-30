@@ -60,6 +60,7 @@ export default ({ url, region, bucketPrefix, useNamespacedBucket }) => {
     link: (config) => (_) => {
       return createAdapter({
         minio: config.minio,
+        region: config.region,
         bucketPrefix: config.bucketPrefix,
         useNamespacedBucket: config.useNamespacedBucket,
       })

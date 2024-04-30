@@ -39,13 +39,15 @@ const { prop, map, always, identity } = R
  */
 
 /**
- * @param {{ minio: any, bucketPrefix: string, useNamespacedBucket: boolean }} config
+ * @param {{ minio: any, bucketPrefix: string, region?: string, useNamespacedBucket: boolean }} config
  * @returns hyper storage terminating adapter impl
  */
 export default function (config) {
-  const { bucketPrefix, useNamespacedBucket, minio } = config
+  const { bucketPrefix, region, useNamespacedBucket, minio } = config
 
-  const lib = useNamespacedBucket ? Namespaced(bucketPrefix) : Multi(bucketPrefix)
+  const lib = useNamespacedBucket
+    ? Namespaced({ bucketPrefix, region })
+    : Multi({ bucketPrefix, region })
 
   const client = minioClientSchema.parse({
     makeBucket: lib.makeBucket(minio),

@@ -56,6 +56,7 @@ Deno.test('adapter', async (t) => {
   const a = adapter({
     minio: happyMinio,
     bucketPrefix: 'test',
+    region: 'us-east-2',
     useNamespacedBucket: false,
   })
 
